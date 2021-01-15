@@ -73,6 +73,12 @@ export default {
             this.$nextTick(() => {
                 Object.keys(this.item).forEach(key => this.item[key] = null)
             })
+        },
+        showModal() {
+
+        },
+        hideModal() {
+            
         }
     }
 }
