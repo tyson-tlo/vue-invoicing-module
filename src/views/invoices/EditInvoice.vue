@@ -7,7 +7,7 @@
         </div>
 
         <div class="create-invoice-card">
-            <h2 class="text-center">Create an Invoice</h2>
+            <h2 class="text-center">Edit Invoice</h2>
 
             <hr>
 
@@ -46,7 +46,7 @@
             <div class="d-flex">
                 <div class="ms-auto">
                     <h5>Invoice Total: ${{ invoice_total }}</h5>
-                    <button class="btn btn-outline-success ms-auto" @click.prevent="saveInvoice">Save Invoice</button>
+                    <button class="btn btn-outline-success ms-auto" @click.prevent="updateInvoice">Update Invoice</button>
                 </div>
             </div>           
             
@@ -71,7 +71,6 @@
 </template>
 
 <script>
-import uuid from 'uuid/dist/v4'
 import CustomerForm from './partials/CustomerForm.vue'
 import CustomerDetails from './partials/CustomerDetails.vue'
 import ItemsHeaderRow from './partials/ItemsHeaderRow.vue'
@@ -86,7 +85,10 @@ export default {
         CustomerForm, CustomerDetails, ItemsHeaderRow, AddedItemRow, BaseModal, EditItemForm, AddItemForm
     },
     mounted() {
-        
+        storage.getInvoiceById(this.$route.params.invoice).then( response => {
+            Object.keys(this.customer).forEach( key => this.customer[key] = response.data.customer[key])
+            this.items = response.data.items
+        })
     },
     data() {
         return {
@@ -144,11 +146,12 @@ export default {
             this.items[index] = item
             this.$refs.editItemModal.hideModal()
         },
-        saveInvoice() {
+        updateInvoice() {
             if (this.validated()) {
-                let id = uuid()
-                storage.store(id, this.customer, this.items)
-                this.$router.push('/invoices/' + id)
+                storage.update(this.$route.params.invoice, this.customer, this.items).then( response => {
+                    console.log(response)
+                    // this.$router.push('/invoices/' + id)
+                })
             }
         },
         validated() {

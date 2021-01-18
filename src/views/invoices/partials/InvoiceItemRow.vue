@@ -4,13 +4,13 @@
             {{ item.name }}
         </div>
         <div class="item-unit-cost">
-            {{ unit_cost }}
+            ${{ unit_cost }}
         </div>
         <div class="item-unit-totals">
             {{ item.units }} {{ item.unit_type }}
         </div>
         <div class="item-total">
-            {{ row_total }}
+            ${{ row_total }}
         </div>        
     </div>
 </template>
@@ -20,13 +20,10 @@ export default {
     props: ['item'],
     computed: {
         row_total() {
-            return (this.item.unit_cost * this.item.units).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD'
-            })
+            return (this.item.unit_cost * this.item.units).toFixed(2)
         },
         unit_cost() {
-            return this.item.unit_cost.toLocaleString('en-US', {style: 'currency', currency: 'USD'})
+            return this.item.unit_cost.toFixed(2)
         }
     }
 }
@@ -40,7 +37,7 @@ export default {
     }
 
     .item-description {
-        width: 70%;        
+        width: 55%;        
     }
 
     .item-unit-cost {
@@ -48,7 +45,7 @@ export default {
     }
 
     .item-unit-totals {
-        width: 10%;
+        width: 20%;
     }
 
     .item-total {

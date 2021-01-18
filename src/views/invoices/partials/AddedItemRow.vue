@@ -4,7 +4,7 @@
             {{ item.name }}
         </div>
         <div class="col-2">
-            {{ item.unit_cost }}
+            ${{ Number(item.unit_cost).toFixed(2) }}
         </div>
         <div class="col-2">
             {{ item.units }} {{ item.unit_type }}

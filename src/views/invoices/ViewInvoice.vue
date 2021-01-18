@@ -1,5 +1,6 @@
 <template>
     <div>
+        
         <div class="invoice-container">
             <div class="title-container" v-if="invoice">
                 <div v-if="invoice.customer">
@@ -41,22 +42,32 @@
                 <div class="summary">
                     <strong>Total: {{ invoice_total }}</strong>
                 </div>
+                <hr>
+                <div class="d-flex justify-content-around">
+                    <button class="btn btn-outline-success">Mark Paid</button>
+                    <button class="btn btn-outline-warning">Mark Outstanding</button>
+                    <button class="btn btn-outline-danger">Delete</button>
+                    <button class="btn btn-outline-warning" @click="$router.push(`/invoices/${$route.params.invoice}/edit`)">Edit</button>
+                </div>
             </div>        
         </div>
+        <div v-if="invoice">
+            <div class="alert alert-green" v-if="paid">
+                <h2>This invoice has been paid!</h2>
+            </div>
 
-        <div class="alert alert-green" v-if="paid">
-            <h2>This invoice has been paid!</h2>
+            <div class="alert alert-orange" v-if="outstanding">
+                <h2>This invoice is still outstanding!</h2>
+            </div>
         </div>
-
-        <div class="alert alert-orange" v-if="outstanding">
-            <h2>This invoice is still outstanding!</h2>
-        </div>
+        
     </div>
     
 </template>
 
 <script>
 import invoices from '../../data/invoices'
+import storage from '../../data/invoice-storage'
 
 import InvoiceItemRow from './partials/InvoiceItemRow.vue'
 
@@ -75,12 +86,20 @@ export default {
     methods: {
         getInvoice() {
             this.invoice = invoices.find( el => el.id === this.$route.params.invoice)
+            storage.getInvoiceById(this.$route.params.invoice).then( response => {
+                this.invoice = response.data
+                console.log(this.invoice.items[0])
+                this.invoice.items.forEach( item => console.log(item.name))
+            })
         }
     },
     computed: {
         invoice_total() {
-            return this.invoice.items.reduce((a, b) => a + (b.unit_cost * b.units), 0).toLocaleString('en-US', {style: 'currency', currency: 'USD'})
-            
+            if (this.invoice.items.length) {
+                return this.invoice.items.reduce((a, b) => a + (b.unit_cost * b.units), 0).toLocaleString('en-US', {style: 'currency', currency: 'USD'})
+            }
+
+            return 0
         },
         paid() {
             if (this.invoice) {
